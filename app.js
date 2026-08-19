@@ -171,7 +171,7 @@ installBtn.addEventListener("click", async () => {
 });
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+  window.addEventListener("load", () => navigator.serviceWorker.register("/shiny-octo-fiesta/sw.js", { scope: "/shiny-octo-fiesta/" }));
 }
 
 renderAll();
