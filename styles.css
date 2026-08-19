@@ -92,3 +92,11 @@ input:focus, textarea:focus { border-color:#93c5fd; box-shadow:0 0 0 3px rgba(59
 @media (min-width:700px) {
   .bottom-nav { left:50%; width:760px; transform:translateX(-50%); border-left:1px solid var(--line); border-right:1px solid var(--line); }
 }
+
+.diag-grid { display:grid; gap:7px; margin:10px 0 12px; }
+.diag-row { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:start; padding:8px 9px; background:#f9fafb; border-radius:10px; font-size:12px; }
+.diag-row strong { text-align:right; max-width:55vw; word-break:break-word; }
+.diag-ok strong { color:#15803d; }
+.diag-bad strong { color:#b91c1c; }
+.diag-warn strong { color:#a16207; }
+.secondary-btn { width:100%; border:1px solid #d1d5db; border-radius:11px; padding:11px; background:white; color:#111827; font-weight:800; margin-bottom:8px; }

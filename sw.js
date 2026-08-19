@@ -1,4 +1,4 @@
-const CACHE = "trail-strong-v1.1";
+const CACHE = "trail-strong-v1.2";
 const BASE = "/shiny-octo-fiesta/";
 const ASSETS = [
   BASE,

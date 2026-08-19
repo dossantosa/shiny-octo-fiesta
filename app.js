@@ -156,11 +156,20 @@ function renderAll() {
 }
 
 let deferredPrompt;
+window.__trailInstallPromptFired = false;
+window.__trailInstallPromptPlatforms = [];
 const installBtn = document.getElementById("installBtn");
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
+  window.__trailInstallPromptFired = true;
+  window.__trailInstallPromptPlatforms = e.platforms || [];
   installBtn.classList.remove("hidden");
+  setTimeout(runDiagnostics, 50);
+});
+window.addEventListener("appinstalled", () => {
+  window.__trailAppInstalled = true;
+  setTimeout(runDiagnostics, 50);
 });
 installBtn.addEventListener("click", async () => {
   if (!deferredPrompt) return;
@@ -173,5 +182,110 @@ installBtn.addEventListener("click", async () => {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("/shiny-octo-fiesta/sw.js", { scope: "/shiny-octo-fiesta/" }));
 }
+
+
+async function imageCheck(url, expected) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve({
+      ok: img.naturalWidth === expected && img.naturalHeight === expected,
+      value: `${img.naturalWidth}×${img.naturalHeight}`
+    });
+    img.onerror = () => resolve({ok:false, value:"failed to load"});
+    img.src = url + "?diag=" + Date.now();
+  });
+}
+
+function diagRow(label, value, status="warn") {
+  const row = document.createElement("div");
+  row.className = `diag-row diag-${status}`;
+  const a = document.createElement("span");
+  a.textContent = label;
+  const b = document.createElement("strong");
+  b.textContent = String(value);
+  row.append(a,b);
+  return row;
+}
+
+async function runDiagnostics() {
+  const grid = document.getElementById("diagGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  const rows = [];
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  rows.push(["Secure context", window.isSecureContext ? "YES" : "NO", window.isSecureContext ? "ok" : "bad"]);
+  rows.push(["Current path", location.pathname, location.pathname.startsWith("/shiny-octo-fiesta/") ? "ok" : "bad"]);
+  rows.push(["Standalone mode", standalone ? "YES" : "NO", standalone ? "ok" : "warn"]);
+  rows.push(["beforeinstallprompt fired", window.__trailInstallPromptFired ? "YES" : "NO", window.__trailInstallPromptFired ? "ok" : "bad"]);
+
+  const manifestLink = document.querySelector('link[rel="manifest"]');
+  rows.push(["Manifest link", manifestLink ? manifestLink.href : "missing", manifestLink ? "ok" : "bad"]);
+
+  try {
+    const r = await fetch(manifestLink.href + "?diag=" + Date.now(), {cache:"no-store"});
+    rows.push(["Manifest HTTP", `${r.status} ${r.statusText}`, r.ok ? "ok" : "bad"]);
+    const m = await r.json();
+    rows.push(["Manifest start_url", m.start_url || "missing", m.start_url === "/shiny-octo-fiesta/" ? "ok" : "bad"]);
+    rows.push(["Manifest scope", m.scope || "missing", m.scope === "/shiny-octo-fiesta/" ? "ok" : "bad"]);
+    rows.push(["Manifest display", m.display || "missing", ["standalone","fullscreen","minimal-ui"].includes(m.display) ? "ok" : "bad"]);
+    rows.push(["192 icon declared", (m.icons||[]).some(i => i.sizes?.includes("192x192")) ? "YES":"NO", (m.icons||[]).some(i => i.sizes?.includes("192x192")) ? "ok":"bad"]);
+    rows.push(["512 icon declared", (m.icons||[]).some(i => i.sizes?.includes("512x512")) ? "YES":"NO", (m.icons||[]).some(i => i.sizes?.includes("512x512")) ? "ok":"bad"]);
+  } catch (e) {
+    rows.push(["Manifest parse", e.message, "bad"]);
+  }
+
+  const i192 = await imageCheck("/shiny-octo-fiesta/icons/icon-192.png", 192);
+  const i512 = await imageCheck("/shiny-octo-fiesta/icons/icon-512.png", 512);
+  rows.push(["192 icon file", i192.value, i192.ok ? "ok":"bad"]);
+  rows.push(["512 icon file", i512.value, i512.ok ? "ok":"bad"]);
+
+  if ("serviceWorker" in navigator) {
+    rows.push(["Service worker API", "YES", "ok"]);
+    try {
+      const reg = await navigator.serviceWorker.getRegistration("/shiny-octo-fiesta/");
+      rows.push(["SW registration", reg ? "FOUND" : "NOT FOUND", reg ? "ok":"bad"]);
+      if (reg) {
+        rows.push(["SW scope", reg.scope, reg.scope.endsWith("/shiny-octo-fiesta/") ? "ok":"bad"]);
+        rows.push(["SW active", reg.active ? reg.active.state : "none", reg.active?.state === "activated" ? "ok":"warn"]);
+      }
+      rows.push(["Page controlled by SW", navigator.serviceWorker.controller ? "YES":"NO", navigator.serviceWorker.controller ? "ok":"bad"]);
+    } catch (e) {
+      rows.push(["Service worker error", e.message, "bad"]);
+    }
+  } else {
+    rows.push(["Service worker API", "NO", "bad"]);
+  }
+
+  rows.push(["User agent", navigator.userAgent, "warn"]);
+  rows.forEach(r => grid.appendChild(diagRow(...r)));
+
+  window.__trailDiagnosticsText = rows.map(r => `${r[0]}: ${r[1]}`).join("\n");
+}
+
+document.getElementById("runDiagBtn")?.addEventListener("click", runDiagnostics);
+
+document.getElementById("copyDiagBtn")?.addEventListener("click", async () => {
+  await runDiagnostics();
+  try {
+    await navigator.clipboard.writeText(window.__trailDiagnosticsText || "");
+    alert("Diagnostics copied.");
+  } catch {
+    prompt("Copy diagnostics:", window.__trailDiagnosticsText || "");
+  }
+});
+
+document.getElementById("resetPwaBtn")?.addEventListener("click", async () => {
+  if (!confirm("Reset Trail Strong's service worker and PWA caches? Workout logs and weights will stay saved.")) return;
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.filter(r => r.scope.includes("/shiny-octo-fiesta/")).map(r => r.unregister()));
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k.startsWith("trail-strong")).map(k => caches.delete(k)));
+  } finally {
+    location.reload(true);
+  }
+});
+
+setTimeout(runDiagnostics, 1200);
 
 renderAll();

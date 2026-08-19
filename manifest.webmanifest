@@ -1,7 +1,8 @@
 {
+  "id": "/shiny-octo-fiesta/",
   "name": "Trail Strong - Strength & Trail Rebuild",
   "short_name": "Trail Strong",
-  "description": "A simple strength, PT, walking and trail-prep tracker.",
+  "description": "Strength, PT, walking and trail-prep tracker.",
   "start_url": "/shiny-octo-fiesta/",
   "scope": "/shiny-octo-fiesta/",
   "display": "standalone",
@@ -19,17 +20,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/shiny-octo-fiesta/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
-  ],
-  "id": "/shiny-octo-fiesta/",
-  "display_override": [
-    "standalone"
-  ],
-  "prefer_related_applications": false
+  ]
 }

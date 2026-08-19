@@ -1,38 +1,33 @@
-# Trail Strong v1.1
+# Trail Strong v1.2 — PWA Diagnostics
 
-GitHub Pages build configured specifically for:
+This build is configured for:
 
 https://dossantosa.github.io/shiny-octo-fiesta/
 
+## What changed
+- Simplified the web manifest to Chrome's core installability fields.
+- Added an on-device **PWA Diagnostics** panel under **More**.
+- The panel checks:
+  - HTTPS / secure context
+  - Manifest loading and parsing
+  - start URL and scope
+  - 192×192 and 512×512 icon declarations
+  - actual icon dimensions
+  - service-worker registration, scope, activation and page control
+  - whether Chrome fired `beforeinstallprompt`
+  - current display mode
+- Added **Copy diagnostics**.
+- Added **Reset PWA cache & service worker** without deleting workout localStorage.
+- Bumped the service-worker cache to v1.2.
+
 ## Deploy
+Replace the repository-root files with the contents of this package, commit, and wait for GitHub Pages to finish deploying.
 
-Upload the **contents of this folder to the repository root**, replacing the existing files.
+Then on Android:
+1. Open Trail Strong in Chrome.
+2. Go to **More → PWA Diagnostics**.
+3. Tap **Run diagnostics**.
+4. Tap **Copy diagnostics**.
+5. Paste the output into ChatGPT.
 
-Expected repository root:
-- `index.html`
-- `app.js`
-- `styles.css`
-- `manifest.webmanifest`
-- `sw.js`
-- `.nojekyll`
-- `icons/`
-
-GitHub Pages should deploy from:
-- Branch: `main`
-- Folder: `/ (root)`
-
-## Important after updating
-
-Because the old version registered a service worker, Chrome may temporarily retain cached v1 files.
-
-After GitHub Pages finishes deploying:
-1. Remove the old Trail Strong home-screen shortcut.
-2. In Chrome on Android, open `https://dossantosa.github.io/shiny-octo-fiesta/`.
-3. Reload the page.
-4. If Chrome still only offers **Create shortcut**, clear site data for `dossantosa.github.io`, then reopen the site.
-5. Use Chrome's **Install and create shortcut** menu again.
-
-## Privacy
-
-Workout entries are stored in browser `localStorage`. They are not written back to GitHub.
-Do not add credentials, tokens, health records, addresses, or other sensitive data to this public repository.
+Do not clear your browser storage unless specifically needed. The in-app reset button preserves workout logs.

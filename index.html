@@ -59,6 +59,17 @@
         <button id="resetWeekBtn" class="danger-btn">Reset this week</button>
         <p class="small muted">Clears completion checks for the current week. Logged weights and notes are preserved.</p>
       </div>
+
+      <div class="settings-card">
+        <h3>PWA Diagnostics</h3>
+        <p class="small muted">This panel checks the pieces Chrome uses to determine whether Trail Strong can be installed.</p>
+        <div id="diagGrid" class="diag-grid"></div>
+        <button id="runDiagBtn" class="secondary-btn">Run diagnostics</button>
+        <button id="copyDiagBtn" class="secondary-btn">Copy diagnostics</button>
+        <button id="resetPwaBtn" class="danger-btn">Reset PWA cache & service worker</button>
+        <p class="small muted">Resetting the PWA cache does not erase your workout logs or saved weights.</p>
+      </div>
+
       <div class="settings-card">
         <h3>Rebuild guardrails</h3>
         <p>Keep strength work around RPE 5–6 initially. If your foot, knee or back changes your gait or movement pattern, reduce the session rather than pushing through it.</p>
