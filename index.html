@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Trail Strong">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Trail Strong</title>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <div class="eyebrow">STRENGTH + TRAIL REBUILD</div>
+      <h1>Trail Strong</h1>
+      <p id="todayLabel"></p>
+    </div>
+    <button id="installBtn" class="install-btn hidden">Install</button>
+  </header>
+
+  <main>
+    <section id="todayView" class="view active">
+      <div class="summary-card">
+        <div>
+          <span class="muted">This week</span>
+          <strong id="weekProgress">0% complete</strong>
+        </div>
+        <div class="progress"><span id="weekProgressBar"></span></div>
+      </div>
+      <div id="todayContent"></div>
+    </section>
+
+    <section id="gymView" class="view">
+      <h2>Gym</h2>
+      <p class="section-note">Monday, Wednesday and Friday. Keep the rebuild phase submaximal.</p>
+      <div id="gymContent"></div>
+    </section>
+
+    <section id="homeView" class="view">
+      <h2>Home</h2>
+      <p class="section-note">PT, stability and single-leg mechanics. Quality over fatigue.</p>
+      <div id="homeContent"></div>
+    </section>
+
+    <section id="walkView" class="view">
+      <h2>Walk / Trail</h2>
+      <p class="section-note">Build impact tolerance before reintroducing structured running.</p>
+      <div id="walkContent"></div>
+    </section>
+
+    <section id="settingsView" class="view">
+      <h2>Settings</h2>
+      <div class="settings-card">
+        <button id="resetWeekBtn" class="danger-btn">Reset this week</button>
+        <p class="small muted">Clears completion checks for the current week. Logged weights and notes are preserved.</p>
+      </div>
+      <div class="settings-card">
+        <h3>Rebuild guardrails</h3>
+        <p>Keep strength work around RPE 5–6 initially. If your foot, knee or back changes your gait or movement pattern, reduce the session rather than pushing through it.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-view="todayView" class="nav-btn active"><span>●</span>Today</button>
+    <button data-view="gymView" class="nav-btn"><span>◆</span>Gym</button>
+    <button data-view="homeView" class="nav-btn"><span>⌂</span>Home</button>
+    <button data-view="walkView" class="nav-btn"><span>▲</span>Trail</button>
+    <button data-view="settingsView" class="nav-btn"><span>⚙</span>More</button>
+  </nav>
+
+  <template id="exerciseTemplate">
+    <article class="exercise-card">
+      <label class="check-wrap">
+        <input type="checkbox" class="complete-check">
+        <span class="fake-check"></span>
+      </label>
+      <div class="exercise-main">
+        <div class="exercise-title-row">
+          <h3 class="exercise-name"></h3>
+          <button class="details-btn" aria-label="Show coaching cue">i</button>
+        </div>
+        <div class="dose"></div>
+        <div class="cue hidden"></div>
+        <div class="log-grid">
+          <label>Weight
+            <input class="weight-input" inputmode="decimal" placeholder="lb">
+          </label>
+          <label>Actual reps/time
+            <input class="actual-input" placeholder="optional">
+          </label>
+        </div>
+        <textarea class="notes-input" rows="2" placeholder="Quick note..."></textarea>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
